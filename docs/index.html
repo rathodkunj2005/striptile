@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StripTile</title>
+  <meta name="description" content="StripTile is a free, open-source window manager for macOS. Windows sit side by side in one row, and a four-finger swipe slides along it.">
+  <meta name="theme-color" content="#eef0f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1219" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="StripTile">
+  <meta property="og:description" content="A free, open-source window manager for macOS. Every window gets a place in one sliding row.">
+  <meta property="og:image" content="https://rathodkunj2005.github.io/striptile/assets/icon.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="brand" href="#top" aria-label="StripTile home">
+        <img src="assets/icon.png" width="36" height="36" alt="">
+        <span>StripTile</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#features">Features</a>
+        <a href="#shortcuts">Shortcuts</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+        <a class="gh" href="https://github.com/rathodkunj2005/striptile">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <h1>Every window gets a place in the row.</h1>
+      <p class="lede">StripTile lines your windows up side by side and lets you slide along them. Nothing hides behind anything else, and nothing is resized behind your back.</p>
+      <div class="actions">
+        <a class="button primary" href="https://github.com/rathodkunj2005/striptile/releases/latest/download/StripTile.zip">Download StripTile</a>
+        <a class="button" href="https://github.com/rathodkunj2005/striptile">View the source</a>
+      </div>
+      <p class="fine">Free and open source under the MIT license. Requires macOS 13 or later on Apple silicon.</p>
+    </section>
+
+    <section class="demo wrap" aria-label="Interactive demo">
+      <div class="screen">
+        <div class="menubar" aria-hidden="true">
+          <svg viewBox="0 0 20 14" width="20" height="14"><rect x="-3" y="1" width="7" height="12" rx="2.2" opacity=".45"/><rect x="5" y="1" width="10" height="12" rx="2.2"/><rect x="17" y="1" width="7" height="12" rx="2.2" opacity=".45"/></svg>
+          <span>StripTile</span>
+        </div>
+        <div class="stage" id="stage" tabindex="0" role="group"
+             aria-label="A row of windows you can slide along. Drag it, scroll sideways, or press the left and right arrow keys.">
+          <div class="strip" id="strip"></div>
+        </div>
+      </div>
+      <div class="demo-bar">
+        <button class="button" id="open" type="button">Open a window</button>
+        <p id="status" class="status" aria-live="polite"></p>
+        <p class="hint">Drag the row, scroll sideways, or press the arrow keys. This is a small imitation of the real thing.</p>
+      </div>
+      <noscript><p class="hint">The demo needs JavaScript. The app itself does not.</p></noscript>
+    </section>
+
+    <section class="block wrap" id="features">
+      <h2>What it does</h2>
+      <dl class="features">
+        <div>
+          <dt>One row per display</dt>
+          <dd>A new window opens next to the one you are using. Windows already in the row keep their size.</dd>
+        </div>
+        <div>
+          <dt>Four-finger swipe</dt>
+          <dd>Slide along the row with four fingers. It keeps coasting after you let go, then settles on the nearest column.</dd>
+        </div>
+        <div>
+          <dt>Window picker</dt>
+          <dd>Press <kbd>⌃</kbd><kbd>⌥</kbd><kbd>Space</kbd>, type a few letters of an app or a title, and jump to that window.</dd>
+        </div>
+        <div>
+          <dt>Row overview</dt>
+          <dd>See every column to scale at once. Pick one with the arrow keys or a click.</dd>
+        </div>
+        <div>
+          <dt>Rules for each app</dt>
+          <dd>Choose whether an app tiles, floats or is ignored, and the width its windows open at.</dd>
+        </div>
+        <div>
+          <dt>A pinned side window</dt>
+          <dd>Pin one window to the left or right edge. The row scrolls beside it instead of underneath it.</dd>
+        </div>
+        <div>
+          <dt>Stacks, floats and widths</dt>
+          <dd>Stack windows into one column, float one above the row, or cycle a column between half, two thirds and full width.</dd>
+        </div>
+        <div>
+          <dt>It remembers your row</dt>
+          <dd>After a restart, windows come back in the same order and at the same widths.</dd>
+        </div>
+        <div>
+          <dt>Shortcuts you can change</dt>
+          <dd>Every shortcut can be rebound in Settings, along with spacing, swipe speed and scroll direction.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="block wrap" id="shortcuts">
+      <h2>Shortcuts</h2>
+      <p class="intro">Hold <kbd>⌃</kbd><kbd>⌥</kbd> and press the key. All of these can be changed.</p>
+      <ul class="keys">
+        <li><span><kbd>←</kbd> <kbd>→</kbd></span>Move focus along the row</li>
+        <li><span><kbd>⇧</kbd><kbd>←</kbd> <kbd>⇧</kbd><kbd>→</kbd></span>Swap a window with its neighbor</li>
+        <li><span><kbd>R</kbd></span>Cycle width: half, two thirds, full</li>
+        <li><span><kbd>F</kbd></span>Fill the screen</li>
+        <li><span><kbd>C</kbd></span>Center the window</li>
+        <li><span><kbd>[</kbd> <kbd>]</kbd></span>Stack into the column on the left or right</li>
+        <li><span><kbd>⇧</kbd><kbd>[</kbd> <kbd>⇧</kbd><kbd>]</kbd></span>Pop out of a stack</li>
+        <li><span><kbd>T</kbd></span>Float or unfloat</li>
+        <li><span><kbd>P</kbd></span>Pin to the right edge, then the left, then off</li>
+        <li><span><kbd>N</kbd></span>Send to the other display</li>
+        <li><span><kbd>Space</kbd></span>Window picker</li>
+        <li><span><kbd>O</kbd></span>Row overview</li>
+      </ul>
+    </section>
+
+    <section class="block wrap" id="install">
+      <h2>Install</h2>
+      <ol class="steps">
+        <li>
+          <h3>Download and open it</h3>
+          <p>Unzip <a href="https://github.com/rathodkunj2005/striptile/releases/latest/download/StripTile.zip">StripTile.zip</a> and move StripTile to Applications. It lives in the menu bar and has no Dock icon.</p>
+        </li>
+        <li>
+          <h3>Allow it past Gatekeeper</h3>
+          <p>The build is not notarized, so macOS will refuse the first launch. Control-click the app, choose Open, then confirm. Or open System Settings, Privacy &amp; Security, and choose Open Anyway.</p>
+        </li>
+        <li>
+          <h3>Grant Accessibility</h3>
+          <p>StripTile needs this to read and move other apps' windows. Turn it on under System Settings, Privacy &amp; Security, Accessibility. The app starts working as soon as you do.</p>
+        </li>
+        <li>
+          <h3>Free up four-finger swipes</h3>
+          <p>Open System Settings, Trackpad, More Gestures, and turn off the four-finger swipe between full-screen apps. Otherwise macOS and StripTile both react. The menu bar icon tells you when this is still on.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="block wrap" id="faq">
+      <h2>Questions</h2>
+      <div class="faq">
+        <details>
+          <summary>Is it really free?</summary>
+          <p>Yes. It is MIT licensed, with no account, no payment and no tracking. The app contains no networking code at all.</p>
+        </details>
+        <details>
+          <summary>Why is it not notarized?</summary>
+          <p>Notarization needs a paid Apple Developer membership, and this is a free project. The release is signed ad hoc. The source is public, and <code>./bundle.sh</code> builds the same app on your own Mac.</p>
+        </details>
+        <details>
+          <summary>What does the Accessibility permission do?</summary>
+          <p>It lets StripTile read where your windows are and move them. That is the only thing it is used for.</p>
+        </details>
+        <details>
+          <summary>Does the swipe use anything private?</summary>
+          <p>Yes. Reading raw trackpad touches goes through Apple's private MultitouchSupport framework, and Apple can change it in any macOS update. If that happens the swipe may stop working. Every keyboard shortcut will keep working.</p>
+        </details>
+        <details>
+          <summary>Can I still use Mission Control and App Exposé?</summary>
+          <p>StripTile ignores swipes that start out vertical, so four fingers up and down can stay with macOS. Turn them on in Trackpad settings. This was tuned on one trackpad, so tell us if it misfires on yours.</p>
+        </details>
+        <details>
+          <summary>Where do the ideas come from?</summary>
+          <p>Scrolling window managers such as niri, PaperWM and Paneru. StripTile is a separate app written in Swift and shares no code with them.</p>
+        </details>
+        <details>
+          <summary>Does it work on Intel Macs?</summary>
+          <p>The download is built for Apple silicon. On an Intel Mac, build it from source.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>StripTile is open source under the <a href="https://github.com/rathodkunj2005/striptile/blob/main/LICENSE">MIT license</a>.</p>
+    <p><a href="https://github.com/rathodkunj2005/striptile">Source</a> · <a href="https://github.com/rathodkunj2005/striptile/issues">Report a problem</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
