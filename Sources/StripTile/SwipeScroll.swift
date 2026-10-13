@@ -4,6 +4,29 @@ private typealias ContactCallback = @convention(c) (UnsafeMutableRawPointer?, Un
 private typealias CreateList = @convention(c) () -> Unmanaged<CFArray>?
 private typealias Register = @convention(c) (UnsafeMutableRawPointer, ContactCallback) -> Void
 private typealias Start = @convention(c) (UnsafeMutableRawPointer, Int32) -> Int32
+private typealias Stop = @convention(c) (UnsafeMutableRawPointer) -> Int32
+
+private struct MultitouchAPI {
+    let createList: CreateList
+    let register: Register
+    let unregister: Register
+    let start: Start
+    let stop: Stop
+
+    static let shared: MultitouchAPI? = {
+        guard let lib = dlopen("/System/Library/PrivateFrameworks/MultitouchSupport.framework/MultitouchSupport", RTLD_NOW),
+              let create = dlsym(lib, "MTDeviceCreateList"),
+              let register = dlsym(lib, "MTRegisterContactFrameCallback"),
+              let unregister = dlsym(lib, "MTUnregisterContactFrameCallback"),
+              let start = dlsym(lib, "MTDeviceStart"),
+              let stop = dlsym(lib, "MTDeviceStop") else { return nil }
+        return MultitouchAPI(createList: unsafeBitCast(create, to: CreateList.self),
+                             register: unsafeBitCast(register, to: Register.self),
+                             unregister: unsafeBitCast(unregister, to: Register.self),
+                             start: unsafeBitCast(start, to: Start.self),
+                             stop: unsafeBitCast(stop, to: Stop.self))
+    }()
+}
 
 private func contactFrame(_ device: UnsafeMutableRawPointer?, _ touches: UnsafeMutableRawPointer?, _ count: Int32, _ timestamp: Double, _ frame: Int32) -> Int32 {
     SwipeScroll.shared.handle(touches, Int(count))
@@ -40,23 +63,46 @@ final class SwipeScroll {
         set { lock.withLock { targetFingers = newValue } }
     }
 
+    private var deviceList: CFArray?
+
     @discardableResult
     func start() -> Bool {
-        guard let lib = dlopen("/System/Library/PrivateFrameworks/MultitouchSupport.framework/MultitouchSupport", RTLD_NOW),
-              let createSym = dlsym(lib, "MTDeviceCreateList"),
-              let registerSym = dlsym(lib, "MTRegisterContactFrameCallback"),
-              let startSym = dlsym(lib, "MTDeviceStart"),
-              let list = unsafeBitCast(createSym, to: CreateList.self)()?.takeRetainedValue() else { return false }
-        let register = unsafeBitCast(registerSym, to: Register.self)
-        let startDevice = unsafeBitCast(startSym, to: Start.self)
+        stop()
+        guard let api = MultitouchAPI.shared, let list = api.createList()?.takeRetainedValue() else { return false }
         let count = CFArrayGetCount(list)
         for index in 0..<count {
             guard let raw = CFArrayGetValueAtIndex(list, index) else { continue }
             let device = UnsafeMutableRawPointer(mutating: raw)
-            register(device, contactFrame)
-            _ = startDevice(device, 0)
+            api.register(device, contactFrame)
+            _ = api.start(device, 0)
         }
+        deviceList = list
         return count > 0
+    }
+
+    func stop() {
+        if let api = MultitouchAPI.shared, let list = deviceList {
+            for index in 0..<CFArrayGetCount(list) {
+                guard let raw = CFArrayGetValueAtIndex(list, index) else { continue }
+                let device = UnsafeMutableRawPointer(mutating: raw)
+                api.unregister(device, contactFrame)
+                _ = api.stop(device)
+            }
+        }
+        deviceList = nil
+        lock.withLock {
+            lastX = nil
+            lastY = nil
+            axis = .undecided
+            accumulatedX = 0
+            accumulatedY = 0
+            velocity = 0
+        }
+    }
+
+    func restart() {
+        let found = start()
+        Log.write("multitouch restarted, devices found=\(found)")
     }
 
     fileprivate func handle(_ touches: UnsafeMutableRawPointer?, _ count: Int) {

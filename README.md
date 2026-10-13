@@ -36,7 +36,7 @@ swift run StripCheck        # runs the layout engine checks
 
 The Command Line Tools are enough. There is no Xcode project.
 
-An ad-hoc signature changes with every build, and macOS drops the Accessibility grant when it does. Toggle StripTile off and on in the Accessibility list after rebuilding.
+An ad-hoc signature changes with every build, and macOS drops the Accessibility grant when it does. Run `./tools/make_signing_identity.sh` once to create a local self-signed certificate in your login keychain. `bundle.sh` then signs with it automatically, and rebuilds keep their permission. Without it you must toggle StripTile off and on in the Accessibility list after every build.
 
 ## How it is put together
 

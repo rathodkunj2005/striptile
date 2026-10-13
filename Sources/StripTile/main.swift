@@ -25,6 +25,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         SwipeScroll.shared.onSettle = { [m = manager] in m.settleScroll() }
         if !SwipeScroll.shared.start() { Log.write("multitouch unavailable: swipe disabled") }
 
+        for name in [NSWorkspace.didWakeNotification, NSWorkspace.screensDidWakeNotification] {
+            NSWorkspace.shared.notificationCenter.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                self?.recoverAfterWake()
+            }
+        }
+
         registerHotKeys()
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = Self.menuBarGlyph()
@@ -42,6 +48,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         manager.saveRow()
+    }
+
+    private func recoverAfterWake() {
+        for delay in [1.0, 4.0] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                SwipeScroll.shared.restart()
+                self?.manager.relayout()
+            }
+        }
     }
 
     private func perform(_ action: Action) {

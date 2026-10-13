@@ -23,5 +23,13 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <key>LSUIElement</key><true/>
 </dict></plist>
 PLIST
-codesign --force --sign - "$APP"
+if [ -z "${STRIPTILE_SIGN_IDENTITY+x}" ]; then
+    if security find-identity -p codesigning | grep -q "StripTile Local Signing"; then
+        STRIPTILE_SIGN_IDENTITY="StripTile Local Signing"
+    else
+        STRIPTILE_SIGN_IDENTITY="-"
+    fi
+fi
+codesign --force --sign "$STRIPTILE_SIGN_IDENTITY" "$APP"
+echo "signed with: $STRIPTILE_SIGN_IDENTITY"
 echo "built $APP"
